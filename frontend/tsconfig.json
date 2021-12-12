@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "useDefineForClassFields": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "react",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "strictNullChecks": false,
+    "noImplicitAny": true,
+    "noEmit": false,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": false,
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "paths": {
+      "@shared/types": [
+        "../libs/types/src/index"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue"
+  ]
+}
