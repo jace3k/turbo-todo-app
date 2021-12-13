@@ -2,9 +2,18 @@
 # source: https://medium.com/@gausmann.simon/nestjs-typeorm-and-postgresql-full-example-development-and-project-setup-working-with-database-c1a2b1b11b8f
 set -e
 
-SERVER=""
-PW=""
-DB=""
+### READING DB DETAILS FROM ENV
+RUN_DB_SERVER=$(grep -oP '^RUN_DB_SERVER=\K.*' .env)
+RUN_DB_NAME=$(grep -oP '^RUN_DB_NAME=\K.*' .env)
+RUN_DB_PASSWORD=$(grep -oP '^RUN_DB_PASSWORD=\K.*' .env)
+###
+
+echo $RUN_DB_SERVER
+### FILL VALUES BEFORE RUN SCRIPT
+SERVER=$RUN_DB_SERVER
+DB=$RUN_DB_NAME
+PW=$RUN_DB_PASSWORD
+###
 
 echo ">> stopping docker [$SERVER]..."
 docker kill $SERVER && docker rm $SERVER

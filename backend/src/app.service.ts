@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { TodoElement } from 'types'
+import { TodoElement } from '@shared/types'
 
 @Injectable()
 export class AppService {
-  getHello(): string {
+  getHello() {
     const todo: TodoElement = {
       id: 1,
-      title: 'AAAAA',
-      content: 'content of the todo elementa'
+      title: 'Do something',
+      content: 'content of the todo element'
     }
-    return `todo: ${todo.title}:ddd ${todo.content}`;
+    return { message: `TITLE: ${todo.title} CONTENT: ${todo.content}` }
   }
 }

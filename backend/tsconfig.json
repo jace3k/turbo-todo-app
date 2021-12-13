@@ -18,12 +18,9 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "types": ["../libs/types"]
+      "@shared/types": [
+        "../libs/types/src/index"
+      ]
     }
-  },
-  "references": [
-    {
-      "path": "../libs/types", "prepend": true
-    }
-  ]
+  }
 }
