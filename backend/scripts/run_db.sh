@@ -16,7 +16,8 @@ PW=$RUN_DB_PASSWORD
 ###
 
 echo ">> stopping docker [$SERVER]..."
-docker kill $SERVER && docker rm $SERVER
+docker kill $SERVER || : 
+docker rm $SERVER
 
 echo ">> starting new docker [$SERVER]..."
 docker run --name $SERVER -e POSTGRES_PASSWORD=$PW \
