@@ -22,9 +22,9 @@
     "start:dev:db": "./scripts/run_db.sh",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js" ,
     "config": "rm -f ormconfig.json && ts-node -r tsconfig-paths/register scripts/write_config.ts",
-    "migration:generate": "npm run config && npm run typeorm migration:generate -n",
-    "migration:create": "npm run config && npm run typeorm migration:create -n",
-    "migration": "npm run config && npm run typeorm migration:run"
+    "migration:generate": "npm run config && npm run build && npm run typeorm -- migration:generate -n",
+    "migration:create": "npm run config && npm run -- typeorm migration:create -n",
+    "migration": "npm run config && npm run build && npm run typeorm -- migration:run"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
