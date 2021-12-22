@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { List } from 'src/models/list.entity';
+import { List } from 'src/entities/list.entity';
 import { ListsController } from './lists.controller';
 
 @Module({

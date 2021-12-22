@@ -1,5 +1,6 @@
-import { Controller, Get, Post } from "@nestjs/common";
-import { Todo } from "src/models/todo.entity";
+import { Body, Controller, Get, Post, ValidationPipe } from "@nestjs/common";
+import { TodoDto } from "src/dto/todo.dto";
+import { Todo } from "src/entities/todo.entity";
 import { TodosService } from "./todos.service";
 
 @Controller('todos')
@@ -13,8 +14,9 @@ export class TodosController {
   }
 
   @Post()
-  async create() {
-    
+  async create(@Body(ValidationPipe) todoDto: TodoDto) {
+  // TODO
+    return 'ok'
   }
 
 }
