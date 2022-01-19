@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { TodoElement } from '@shared/types'
+import { TodoDtoInterface } from '@turbo-todo-app/shared';
 
 @Injectable()
 export class AppService {
   getHello() {
-    const todo: TodoElement = {
-      id: 1,
+    const todo: TodoDtoInterface = {
       title: 'Do something',
-      content: 'content of the todo element'
+      description: 'content of the todo element',
+      list: 1,
     }
-    return { message: `TITLE: ${todo.title} CONTENT: ${todo.content}` }
+    return { message: `TITLE: ${todo.title} CONTENT: ${todo.description}` }
   }
 }

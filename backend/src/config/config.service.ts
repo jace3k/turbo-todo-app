@@ -12,7 +12,7 @@ class ConfigService {
       throw new Error(`config error - missing env: ${key}`);
     }
 
-    return value;
+    return value || "";
   }
 
   public ensureValues(keys: string[]) {
@@ -26,22 +26,57 @@ class ConfigService {
 
   public isProduction() {
     const mode = this.getValue('MODE', false);
-    return mode != 'DEV';
+    return mode == 'PROD';
+  }
+
+  public isTest() {
+    const mode = this.getValue('MODE', false);
+    return mode == 'TEST';
+  }
+
+  public isDevInMemory() {
+    const mode = this.getValue('MODE', false);
+    return mode == 'IN_MEMORY';
+  }
+
+  private getTestConfig(): TypeOrmModuleOptions {
+    return {
+      type: 'better-sqlite3',
+      database: ':memory:',
+      // logging: true,
+      synchronize: true,
+      entities: ['src/**/*.entity{.js,.ts}'],
+      migrationsTableName: 'migration',
+      migrations: ['src/migration/*{.js,.ts}'],
+      cli: {
+        migrationsDir: 'src/migration'
+      },
+    }
   }
 
   public getTypeOrmConfig(): TypeOrmModuleOptions {
+    if (this.isTest())
+      return this.getTestConfig();
+
+    if (this.isDevInMemory())
+      return {
+        ...this.getTestConfig(),
+        entities: ['dist/src/**/*.entity{.js,.ts}'],
+        migrations: ['dist/src/migration/*{.js,.ts}'],
+      }
+
     return {
       type: 'postgres',
-
+      logging: false,
       host: this.getValue('POSTGRES_HOST'),
       port: parseInt(this.getValue('POSTGRES_PORT')),
       username: this.getValue('POSTGRES_USER'),
       password: this.getValue('POSTGRES_PASSWORD'),
       database: this.getValue('POSTGRES_DATABASE'),
 
-      entities: ['dist/backend/src/**/*.entity.js'],
+      entities: ['dist/src/**/*.entity.js'],
       migrationsTableName: 'migration',
-      migrations: ['dist/backend/src/migration/*{.js,.ts}'],
+      migrations: ['dist/src/migration/*{.js,.ts}'],
       cli: {
         migrationsDir: 'src/migration'
       },

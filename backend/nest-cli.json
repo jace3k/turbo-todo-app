@@ -1,5 +1,8 @@
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
-  "entryFile": "backend/src/main"
+  "entryFile": "src/main",
+  "compilerOptions": {
+    "assets": ["i18n/**/*"]
+  }
 }

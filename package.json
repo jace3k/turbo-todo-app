@@ -2,9 +2,21 @@
   "name": "turbo-todo-app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "shared"
+  ],
+  "references": [
+    {
+      "path": "shared"
+    }
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:shared": "yarn workspace @turbo-todo-app/shared build",
+    "build:backend": "yarn workspace @turbo-todo-app/backend build",
+    "build:backend:all": "yarn workspace @turbo-todo-app/backend all"
   },
   "keywords": [],
   "author": "",

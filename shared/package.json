@@ -1,0 +1,16 @@
+{
+  "name": "@turbo-todo-app/shared",
+  "version": "0.0.1",
+  "description": "",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "tsc",
+    "start:dev": "tsc --watch",
+    "lint": "eslint \"{src,test}/**/*.ts\" --fix"
+  },
+  "dependencies": {
+    "typescript": "^4.3.5"
+  }
+}
