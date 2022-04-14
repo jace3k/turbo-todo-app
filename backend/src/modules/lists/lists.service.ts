@@ -9,20 +9,22 @@ import { List } from "../../entities/list.entity";
 @Injectable()
 export class ListsService {
   constructor(
-    
+
     @InjectRepository(List)
     private listsRepository: Repository<List>,
     private readonly i18n: I18nRequestScopeService
   ) { }
 
-  findAll(): Promise<List[]> {
-    return this.listsRepository.find();
+  findAll(user: number): Promise<List[]> {
+    return this.listsRepository.find({
+      where: { user }
+    });
   }
 
-  async findOne(id: string): Promise<List> {
+  async findOne(id: string, user: number): Promise<List> {
 
     const list = await this.listsRepository.findOne({
-      where: { id },
+      where: { id, user },
       relations: ['todos']
     });
     if (!list) {
@@ -33,12 +35,12 @@ export class ListsService {
     return list;
   }
 
-  async remove(id: number): Promise<DeleteResult> {
-    return await this.listsRepository.delete(id);
+  async remove(id: number, user: number): Promise<DeleteResult> {
+    return await this.listsRepository.delete({ id, user });
   }
 
-  async create(listDto: ListDto) {
-    return this.listsRepository.save(listDto);
+  async create(listDto: ListDto, user: number) {
+    return this.listsRepository.save({ ...listDto, user });
   }
 
   async update(id: number, listDto: UpdateListDto) {

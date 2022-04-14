@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, UsePipes, Request } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ListDto } from '../../dto/list.dto';
 import { UpdateListDto } from '../../dto/update-list.dto';
 import { List } from '../../entities/list.entity';
@@ -6,29 +7,30 @@ import { ValidatePayloadExistsPipe } from '../../pipes/payload-exists.pipe';
 import { ListsService } from './lists.service';
 
 @Controller('lists')
+@UseGuards(AuthGuard('jwt'))
 export class ListsController {
   constructor(
     private listsService: ListsService
-  ) {}
+  ) { }
 
   @Get()
-  async getAll(): Promise<List[]> {
-    return await this.listsService.findAll();
+  async getAll(@Request() req: any): Promise<List[]> {
+    return await this.listsService.findAll(req.user.id);
   }
 
   @Get('/:id')
-  async getOne(@Param('id') id: string): Promise<List> {
-    return await this.listsService.findOne(id);
+  async getOne(@Request() req: any, @Param('id') id: string): Promise<List> {
+    return await this.listsService.findOne(id, req.user.id);
   }
 
   @Post()
-  async create(@Body() listDto: ListDto): Promise<List> {
-    return await this.listsService.create(listDto);
+  async create(@Request() req: any, @Body() listDto: ListDto): Promise<List> {
+    return await this.listsService.create(listDto, req.user.id);
   }
 
   @Delete('/:id')
-  async delete(@Param('id') id: number) {
-    return await this.listsService.remove(id);
+  async delete(@Request() req: any, @Param('id') id: number) {
+    return await this.listsService.remove(id, req.user.id);
   }
 
   @Put('/:id')
