@@ -1,12 +1,15 @@
-import { List } from "../src/entities/list.entity";
 import { Connection, getConnection, Repository } from "typeorm";
+import { List } from "../src/entities/list.entity";
 import { Todo } from "../src/entities/todo.entity";
+import { User } from "../src/entities/user.entity";
 
 export class Seed {
   private connection: Connection;
   private listRepository: Repository<List>;
   private todoRepository: Repository<Todo>;
+  private userRepository: Repository<User>;
 
+  USERS_AMOUNT = 1;
   LISTS_AMOUNT = 4;
   TODOS_AMOUNT = 6;
 
@@ -14,11 +17,13 @@ export class Seed {
     this.connection = getConnection();
     this.listRepository = this.connection.getRepository(List);
     this.todoRepository = this.connection.getRepository(Todo);
+    this.userRepository = this.connection.getRepository(User);
   }
 
   async clear() {
     await this.listRepository.clear();
     await this.todoRepository.clear();
+    await this.userRepository.clear();
   }
 
   async clearAndSeed() {
@@ -27,16 +32,24 @@ export class Seed {
   }
 
   async seed() {
+    await this.seedUsers();
     await this.seedLists();
     await this.seedTodos();
   }
 
+  async seedUsers() {
+    await this.userRepository.save([
+      // password hash generated for password: 'testpass' with salt round 3.
+      { id: 1, username: "testuser", password: "$2b$04$bT6ViNozcrnRMCYFjpIKAe54hRnacJGxnAg1w9gO0fXxv4ADKx9PS" },
+    ]);
+  }
+
   async seedLists() {
     await this.listRepository.save([
-      { id: 1, name: "TestList1" },
-      { id: 2, name: "TestList2" },
-      { id: 3, name: "TestList3" },
-      { id: 4, name: "TestList4" },
+      { id: 1, name: "TestList1", user: 1 },
+      { id: 2, name: "TestList2", user: 1 },
+      { id: 3, name: "TestList3", user: 1 },
+      { id: 4, name: "TestList4", user: 1 },
     ]);
   }
 

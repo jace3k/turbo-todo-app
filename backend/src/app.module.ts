@@ -7,6 +7,7 @@ import { TodosModule } from './modules/todo/todos.module';
 import { ListsModule } from './modules/lists/lists.module';
 import { AcceptLanguageResolver, HeaderResolver, I18nJsonParser, I18nModule } from 'nestjs-i18n';
 import { LoggerMiddleware } from './utils/logging.util';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { LoggerMiddleware } from './utils/logging.util';
     }),
     TodosModule,
     ListsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
