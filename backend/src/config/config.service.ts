@@ -39,6 +39,10 @@ class ConfigService {
     return mode == 'IN_MEMORY';
   }
 
+  public getSecret() {
+    return this.getValue('SECRET');
+  }
+
   private getTestConfig(): TypeOrmModuleOptions {
     return {
       type: 'better-sqlite3',

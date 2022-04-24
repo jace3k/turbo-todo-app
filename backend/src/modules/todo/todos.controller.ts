@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UsePipes } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, UsePipes } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
 import { TodoDto } from "../../dto/todo.dto";
 import { UpdateTodoDto } from "../../dto/update-todo.dto";
 import { Todo } from "../../entities/todo.entity";
@@ -6,6 +7,7 @@ import { ValidatePayloadExistsPipe } from "../../pipes/payload-exists.pipe";
 import { TodosService } from "./todos.service";
 
 @Controller('todos')
+@UseGuards(AuthGuard('jwt'))
 export class TodosController {
   constructor(
     private todosService: TodosService

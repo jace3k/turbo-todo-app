@@ -124,7 +124,6 @@ describe('Users Module', () => {
 
     expect(loginResponse.body).toHaveProperty('access_token');
     const { access_token } = loginResponse.body;
-    console.log('acc', access_token);
 
     // GET PROFILE WITHOUT TOKEN
     await request(app.getHttpServer())

@@ -6,15 +6,15 @@ import { User } from '../../entities/user.entity';
 import { LocalStrategy } from './local.strategy';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import SECRET from '../../config/secret.constant';
 import { JwtStrategy } from './jwt.strategy';
+import { configService } from '../../config/config.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     PassportModule,
     JwtModule.register({
-      secret: SECRET,
+      secret: configService.getSecret(),
       signOptions: { expiresIn: '12h' },
 
     })

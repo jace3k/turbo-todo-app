@@ -4,10 +4,12 @@ import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { getValidationPipeOptions } from '../src/config/validation-pipe.options';
 import { Seed } from '../scripts/seed';
+import { username, password } from '../src/config/test-user.constant';
 
-describe('Lists Module', () => {
+describe('Todos Module', () => {
   let app: INestApplication;
   let seed: Seed;
+  let authToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -22,11 +24,22 @@ describe('Lists Module', () => {
 
   beforeEach(async () => {
     await seed.clearAndSeed();
+
+    const loginResponse = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ username, password })
+      .expect(201);
+
+    expect(loginResponse.body).toHaveProperty('access_token');
+    const { access_token } = loginResponse.body;
+
+    authToken = `Bearer ${access_token}`;
   });
 
   it('GET /todos', async () => {
     const response = await request(app.getHttpServer())
       .get('/todos')
+      .set('Authorization', authToken)
       .expect(200)
 
     expect(response.body).toHaveLength(6);
@@ -47,9 +60,16 @@ describe('Lists Module', () => {
     //... TODO
   });
 
+  it('GET /todos (no token)', async () => {
+    await request(app.getHttpServer())
+      .get('/todos')
+      .expect(401);
+  });
+
   it('GET /todos/:id', async () => {
     const response = await request(app.getHttpServer())
       .get('/todos/1')
+      .set('Authorization', authToken)
       .expect(200)
 
     expect(response.body).toHaveProperty('id');
@@ -64,9 +84,16 @@ describe('Lists Module', () => {
 
   });
 
+  it('GET /todos/:id (no token)', async () => {
+    await request(app.getHttpServer())
+      .get('/todos/99')
+      .expect(401);
+  });
+
   it('GET /todos/:id (nonexistent)', async () => {
     const response = await request(app.getHttpServer())
       .get('/todos/99')
+      .set('Authorization', authToken)
       .expect(404)
 
     expect(response.body).toHaveProperty('error');
@@ -77,6 +104,7 @@ describe('Lists Module', () => {
   it('POST /todos', async () => {
     const response = await request(app.getHttpServer())
       .post('/todos')
+      .set('Authorization', authToken)
       .send({
         title: 'Newly created todo!',
         description: 'newly created todo description',
@@ -100,14 +128,27 @@ describe('Lists Module', () => {
 
     const response2 = await request(app.getHttpServer())
       .get('/todos')
+      .set('Authorization', authToken)
       .expect(200)
 
     expect(response2.body).toHaveLength(seed.TODOS_AMOUNT + 1);
   });
 
+  it('POST /todos (no token)', async () => {
+    await request(app.getHttpServer())
+      .post('/todos')
+      .send({
+        title: '',
+        description: 'newly created todo description',
+        list: 1
+      })
+      .expect(401);
+  });
+
   it('POST /todos (empty title)', async () => {
     const response = await request(app.getHttpServer())
       .post('/todos')
+      .set('Authorization', authToken)
       .send({
         title: '',
         description: 'newly created todo description',
@@ -120,6 +161,7 @@ describe('Lists Module', () => {
 
     const response2 = await request(app.getHttpServer())
       .get('/todos')
+      .set('Authorization', authToken)
       .expect(200)
 
     expect(response2.body).toHaveLength(seed.TODOS_AMOUNT);
@@ -128,6 +170,7 @@ describe('Lists Module', () => {
   it('POST /todos (without title)', async () => {
     const response = await request(app.getHttpServer())
       .post('/todos')
+      .set('Authorization', authToken)
       .send({
         description: 'newly created todo description',
         list: 1
@@ -139,6 +182,7 @@ describe('Lists Module', () => {
 
     const response2 = await request(app.getHttpServer())
       .get('/todos')
+      .set('Authorization', authToken)
       .expect(200)
 
     expect(response2.body).toHaveLength(seed.TODOS_AMOUNT);
@@ -147,6 +191,7 @@ describe('Lists Module', () => {
   it('POST /todos (too short title)', async () => {
     const response = await request(app.getHttpServer())
       .post('/todos')
+      .set('Authorization', authToken)
       .send({
         title: 'a',
         description: 'newly created todo description',
@@ -159,6 +204,7 @@ describe('Lists Module', () => {
 
     const response2 = await request(app.getHttpServer())
       .get('/todos')
+      .set('Authorization', authToken)
       .expect(200)
 
     expect(response2.body).toHaveLength(seed.TODOS_AMOUNT);
@@ -167,6 +213,7 @@ describe('Lists Module', () => {
   it('POST /todos (without description)', async () => {
     const response = await request(app.getHttpServer())
       .post('/todos')
+      .set('Authorization', authToken)
       .send({
         title: 'Newly created todo!',
         list: 1
@@ -188,6 +235,7 @@ describe('Lists Module', () => {
 
     const response2 = await request(app.getHttpServer())
       .get('/todos')
+      .set('Authorization', authToken)
       .expect(200)
 
     expect(response2.body).toHaveLength(seed.TODOS_AMOUNT + 1);
@@ -196,6 +244,7 @@ describe('Lists Module', () => {
   it('POST /todos (empty body {})', async () => {
     const response = await request(app.getHttpServer())
       .post('/todos')
+      .set('Authorization', authToken)
       .send({})
       .expect(400);
 
@@ -204,6 +253,7 @@ describe('Lists Module', () => {
 
     const response2 = await request(app.getHttpServer())
       .get('/todos')
+      .set('Authorization', authToken)
       .expect(200)
 
     expect(response2.body).toHaveLength(seed.TODOS_AMOUNT);
@@ -212,6 +262,7 @@ describe('Lists Module', () => {
   it('POST /todos (without payload)', async () => {
     const response = await request(app.getHttpServer())
       .post('/todos')
+      .set('Authorization', authToken)
       .expect(400);
 
     expect(response.body).toHaveProperty('error');
@@ -219,6 +270,7 @@ describe('Lists Module', () => {
 
     const response2 = await request(app.getHttpServer())
       .get('/todos')
+      .set('Authorization', authToken)
       .expect(200)
 
     expect(response2.body).toHaveLength(seed.TODOS_AMOUNT);
@@ -227,6 +279,7 @@ describe('Lists Module', () => {
   it('DELETE /todos/:id', async () => {
     const response = await request(app.getHttpServer())
       .delete('/todos/1')
+      .set('Authorization', authToken)
       .expect(200);
 
     expect(response.body).toHaveProperty('affected');
@@ -234,14 +287,22 @@ describe('Lists Module', () => {
 
     const response2 = await request(app.getHttpServer())
       .get('/todos')
+      .set('Authorization', authToken)
       .expect(200)
     const listOfTodos = response2.body
     expect(listOfTodos).toHaveLength(seed.TODOS_AMOUNT - 1);
   });
 
+  it('DELETE /todos/:id (no token)', async () => {
+    await request(app.getHttpServer())
+      .delete('/todos/99')
+      .expect(401)
+  });
+
   it('DELETE /todos/:id (nonexistent)', async () => {
     const response = await request(app.getHttpServer())
       .delete('/todos/99')
+      .set('Authorization', authToken)
       .expect(200)
 
     expect(response.body).toHaveProperty('affected');
@@ -251,6 +312,7 @@ describe('Lists Module', () => {
   it('PUT /todos/:id', async () => {
     const response = await request(app.getHttpServer())
       .put('/todos/1')
+      .set('Authorization', authToken)
       .send({
         title: 'Updated my todo!',
         description: 'updated my todo description'
@@ -262,6 +324,7 @@ describe('Lists Module', () => {
 
     const response2 = await request(app.getHttpServer())
       .get('/todos/1')
+      .set('Authorization', authToken)
       .expect(200)
 
     const updatedList = response2.body;
@@ -279,6 +342,7 @@ describe('Lists Module', () => {
   it('PUT /todos/:id (update only description)', async () => {
     const response = await request(app.getHttpServer())
       .put('/todos/1')
+      .set('Authorization', authToken)
       .send({
         description: 'updated my todo description'
       })
@@ -289,6 +353,7 @@ describe('Lists Module', () => {
 
     const response2 = await request(app.getHttpServer())
       .get('/todos/1')
+      .set('Authorization', authToken)
       .expect(200)
 
     const updatedList = response2.body;
@@ -306,6 +371,7 @@ describe('Lists Module', () => {
   it('PUT /todos/:id (update list)', async () => {
     const response = await request(app.getHttpServer())
       .put('/todos/1')
+      .set('Authorization', authToken)
       .send({
         list: 3
       })
@@ -316,6 +382,7 @@ describe('Lists Module', () => {
 
     const response2 = await request(app.getHttpServer())
       .get('/todos/1')
+      .set('Authorization', authToken)
       .expect(200)
 
     const updatedList = response2.body;
@@ -330,9 +397,19 @@ describe('Lists Module', () => {
     expect(updatedList.list).toEqual(3);
   });
 
+  it('PUT /todos/:id (no token)', async () => {
+    await request(app.getHttpServer())
+      .put('/todos/1')
+      .send({
+        title: ''
+      })
+      .expect(401)
+  });
+
   it('PUT /todos/:id (empty title)', async () => {
     const response = await request(app.getHttpServer())
       .put('/todos/1')
+      .set('Authorization', authToken)
       .send({
         title: ''
       })
@@ -345,6 +422,7 @@ describe('Lists Module', () => {
   it('PUT /todos/:id (empty body {})', async () => {
     const response = await request(app.getHttpServer())
       .put('/todos/1')
+      .set('Authorization', authToken)
       .send({})
       .expect(400)
 
@@ -355,6 +433,7 @@ describe('Lists Module', () => {
   it('PUT /todos/:id (nonexistent)', async () => {
     const response = await request(app.getHttpServer())
       .put('/todos/99')
+      .set('Authorization', authToken)
       .send({
         description: 'updated my todo description'
       })
